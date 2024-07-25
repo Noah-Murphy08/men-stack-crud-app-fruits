@@ -6,7 +6,7 @@ const app = express()
 
 //GET '/'
 app.get('/', async (req, res) => {
-    res.send('Hello, friend')
+    res.render('index.ejs')
 })
 
 
