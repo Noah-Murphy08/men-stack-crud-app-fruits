@@ -4,6 +4,8 @@ const dotenv = require('dotenv')
 dotenv.config()
 const express = require('express')
 const mongoose = require('mongoose')
+const methodOverride = require('method-override')
+const morgan = require('morgan')
 
 const app = express()
 
@@ -19,6 +21,8 @@ const Fruit = require('./models/fruit.js')
 
 //middleware
 app.use(express.urlencoded({ extended: false }))
+app.use(methodOverride('_method'))
+app.use(morgan('dev'))
 
 //GET '/'
 app.get('/', async (req, res) => {
@@ -53,8 +57,27 @@ app.post('/fruits', async (req, res) => {
     await Fruit.create(req.body)
 })
 
+//DELETE '/fruits/fruitId'
+app.delete('/fruits/:fruitId', async (req, res) => {
+    await Fruit.findByIdAndDelete(req.params.fruitId)
+    res.redirect('/fruits')
+})
 
+//GET
+app.get('/fruits/:fruitId/edit', async (req, res) => {
+    const foundFruit = await Fruit.findById(req.params.fruitId)
+    res.render('fruits/edit.ejs', { fruit: foundFruit })
+})
 
+app.put('/fruits/:fruitId', async (req, res) => {
+    if (req.body.isReadyToEat === "on") {
+        req.body.isReadyToEat = true;
+    } else {
+        req.body.isReadyToEat = false;
+    }
+    await Fruit.findByIdAndUpdate(req.params.fruitId, req.body)
+    res.redirect(`/fruits/${req.params.fruitId}`)
+})
 
 
 
