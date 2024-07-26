@@ -26,13 +26,20 @@ app.get('/', async (req, res) => {
 })
 
 //GET '/fruits'
-app.get('/fruits', (req, res) => {
-    res.send('Welcome to the index page!')
+app.get('/fruits', async (req, res) => {
+    const allFruits = await Fruit.find({})
+    res.render('fruits/index.ejs', { fruits: allFruits })
 })
 
 //GET '/fruits/new'
 app.get('/fruits/new', (req, res) => {
     res.render('fruits/new.ejs')
+})
+
+//GET '/fruits/:fruitId'
+app.get('/fruits/:fruitId', async(req, res) => {
+    const foundFruit = await Fruit.findById(req.params.fruitId)
+    res.render('fruits/show.ejs', { fruit: foundFruit })
 })
 
 //POST '/fruits'
@@ -42,7 +49,7 @@ app.post('/fruits', async (req, res) => {
     } else {
         req.body.isReadyToEat = false
     }
-    res.redirect('/fruits/new')
+    res.redirect('/fruits')
     await Fruit.create(req.body)
 })
 
